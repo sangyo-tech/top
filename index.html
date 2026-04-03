@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Short Video AI Ultimate+ - ショート動画エディター</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { overscroll-behavior: none; background: #111; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    @keyframes zoomIn { from { transform: scale(1); } to { transform: scale(1.15); } }
+    @keyframes zoomOut { from { transform: scale(1.15); } to { transform: scale(1); } }
+    @keyframes panLeft { from { transform: translateX(0); } to { transform: translateX(-10%); } }
+    @keyframes panRight { from { transform: translateX(-10%); } to { transform: translateX(0); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(5deg); } }
+    @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
+    @keyframes kenburns { 0% { transform: scale(1) translate(0, 0); } 100% { transform: scale(1.2) translate(-5%, -5%); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+    @keyframes textPop { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes textSlide { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes textGlow { 0%, 100% { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor; } 50% { text-shadow: 0 0 20px currentColor, 0 0 30px currentColor; } }
+    @keyframes textBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes waveform { 0%, 100% { height: 20%; } 50% { height: 80%; } }
+    @keyframes stickerBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    @keyframes stickerSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes stickerPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+    @keyframes stickerShake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+    @keyframes aiThinking { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes speaking { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.5); } }
+    .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+    .effect-zoom-in { animation: zoomIn var(--duration) ease-out forwards; }
+    .effect-zoom-out { animation: zoomOut var(--duration) ease-in forwards; }
+    .effect-pan-left { animation: panLeft var(--duration) ease-in-out forwards; }
+    .effect-pan-right { animation: panRight var(--duration) ease-in-out forwards; }
+    .effect-shake { animation: shake 0.5s ease-in-out infinite; }
+    .effect-bounce { animation: bounce 1s ease-in-out infinite; }
+    .effect-glitch { animation: glitch 0.3s ease-in-out infinite; }
+    .effect-kenburns { animation: kenburns var(--duration) ease-in-out forwards; }
+    .effect-float { animation: float 3s ease-in-out infinite; }
+    .effect-rotate { animation: rotate var(--duration) ease-in-out forwards; }
+    .text-pop { animation: textPop 0.5s ease-out forwards; }
+    .text-slide { animation: textSlide 0.5s ease-out forwards; }
+    .text-glow { animation: textGlow 1.5s ease-in-out infinite; }
+    .text-bounce { animation: textBounce 0.5s ease-in-out infinite; }
+    .sticker-bounce { animation: stickerBounce 1s ease-in-out infinite; }
+    .sticker-spin { animation: stickerSpin 2s linear infinite; }
+    .sticker-pulse { animation: stickerPulse 1.5s ease-in-out infinite; }
+    .sticker-shake { animation: stickerShake 0.5s ease-in-out infinite; }
+    .ai-thinking { background: linear-gradient(90deg, #f97316, #ef4444, #f97316); background-size: 200% 200%; animation: aiThinking 2s ease infinite; }
+    .speaking-bar { animation: speaking 0.3s ease-in-out infinite; }
+    select option { background: #1a1a1a; color: white; }
+    input[type="range"] { -webkit-appearance: none; background: rgba(255,255,255,0.2); border-radius: 10px; height: 8px; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #f97316; border-radius: 50%; cursor: pointer; }
+    input[type="color"] { -webkit-appearance: none; border: none; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; }
+    .filter-grayscale { filter: grayscale(100%); }
+    .filter-sepia { filter: sepia(100%); }
+    .filter-vintage { filter: sepia(50%) contrast(90%) brightness(90%); }
+    .filter-cool { filter: hue-rotate(180deg) saturate(80%); }
+    .filter-warm { filter: sepia(30%) saturate(140%); }
+    .filter-dramatic { filter: contrast(150%) saturate(120%); }
+    .filter-noir { filter: grayscale(100%) contrast(120%); }
+    .filter-cyberpunk { filter: hue-rotate(270deg) saturate(150%) contrast(120%); }
+    .filter-sunset { filter: sepia(20%) saturate(150%) hue-rotate(-10deg); }
+    .filter-ocean { filter: hue-rotate(200deg) saturate(120%); }
+    .filter-forest { filter: hue-rotate(80deg) saturate(90%); }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    // 著作権フリー音楽ライブラリ
+    const FREE_MUSIC_LIBRARY = [
+      { id: 'upbeat1', name: 'Energy Pop', category: 'upbeat', bpm: 128, url: 'https://cdn.pixabay.com/audio/2024/11/04/audio_a98e0c5545.mp3', mood: '明るい・ポップ' },
+      { id: 'upbeat2', name: 'Happy Day', category: 'upbeat', bpm: 120, url: 'https://cdn.pixabay.com/audio/2024/09/19/audio_0a70c9bff2.mp3', mood: 'ハッピー' },
+      { id: 'upbeat3', name: 'Energetic Sport', category: 'upbeat', bpm: 135, url: 'https://cdn.pixabay.com/audio/2024/10/08/audio_f78fa1acd5.mp3', mood: 'スポーティ' },
+      { id: 'chill1', name: 'Lo-Fi Chill', category: 'chill', bpm: 85, url: 'https://cdn.pixabay.com/audio/2024/09/06/audio_c8d6185af9.mp3', mood: 'Lo-Fi' },
+      { id: 'chill2', name: 'Ambient Dreams', category: 'chill', bpm: 70, url: 'https://cdn.pixabay.com/audio/2023/10/31/audio_87b45ab5a8.mp3', mood: 'アンビエント' },
+      { id: 'chill3', name: 'Peaceful Piano', category: 'chill', bpm: 60, url: 'https://cdn.pixabay.com/audio/2024/04/16/audio_c95e1d6a36.mp3', mood: 'ピアノ' },
+      { id: 'cinema1', name: 'Epic Cinematic', category: 'cinematic', bpm: 100, url: 'https://cdn.pixabay.com/audio/2024/01/22/audio_effbb73da1.mp3', mood: 'エピック' },
+      { id: 'cinema2', name: 'Dramatic Tension', category: 'cinematic', bpm: 95, url: 'https://cdn.pixabay.com/audio/2024/02/05/audio_4c7de528a7.mp3', mood: 'テンション' },
+      { id: 'electro1', name: 'EDM Drop', category: 'electronic', bpm: 128, url: 'https://cdn.pixabay.com/audio/2024/07/19/audio_fc2e3ef3dd.mp3', mood: 'EDM' },
+      { id: 'electro2', name: 'Synthwave', category: 'electronic', bpm: 118, url: 'https://cdn.pixabay.com/audio/2023/03/20/audio_c1d8b59f2a.mp3', mood: 'シンセ' },
+      { id: 'hiphop1', name: 'Trap Beat', category: 'hiphop', bpm: 140, url: 'https://cdn.pixabay.com/audio/2023/07/03/audio_ded7bc0ae0.mp3', mood: 'トラップ' },
+      { id: 'rock1', name: 'Indie Rock', category: 'rock', bpm: 130, url: 'https://cdn.pixabay.com/audio/2024/06/11/audio_4e1b2e99b5.mp3', mood: 'インディー' },
+    ];
+
+    // AI音声の種類（Web Speech API用）
+    const AI_VOICES = [
+      { id: 'female-jp-1', name: '女性（日本語）', lang: 'ja-JP', gender: 'female', icon: '👩' },
+      { id: 'male-jp-1', name: '男性（日本語）', lang: 'ja-JP', gender: 'male', icon: '👨' },
+      { id: 'female-en-1', name: 'Female (English)', lang: 'en-US', gender: 'female', icon: '👩‍💼' },
+      { id: 'male-en-1', name: 'Male (English)', lang: 'en-US', gender: 'male', icon: '👨‍💼' },
+      { id: 'female-ko-1', name: '여성 (한국어)', lang: 'ko-KR', gender: 'female', icon: '👩‍🎤' },
+      { id: 'child-jp-1', name: '子供（日本語）', lang: 'ja-JP', gender: 'child', icon: '👧' },
+      { id: 'robot-1', name: 'ロボット風', lang: 'ja-JP', gender: 'robot', icon: '🤖' },
+      { id: 'announcer-1', name: 'アナウンサー', lang: 'ja-JP', gender: 'announcer', icon: '🎙️' },
+    ];
+
+    // 音声スタイル
+    const VOICE_STYLES = [
+      { id: 'normal', name: '通常', rate: 1, pitch: 1 },
+      { id: 'slow', name: 'ゆっくり', rate: 0.7, pitch: 1 },
+      { id: 'fast', name: '早口', rate: 1.4, pitch: 1 },
+      { id: 'high', name: '高め', rate: 1, pitch: 1.3 },
+      { id: 'low', name: '低め', rate: 1, pitch: 0.7 },
+      { id: 'dramatic', name: 'ドラマチック', rate: 0.85, pitch: 0.9 },
+      { id: 'cheerful', name: '元気', rate: 1.2, pitch: 1.2 },
+      { id: 'whisper', name: 'ささやき', rate: 0.8, pitch: 1.1 },
+    ];
+
+    // ステッカーライブラリ
+    const STICKER_LIBRARY = {
+      emoji: ['😀', '😂', '🤣', '😍', '🥰', '😎', '🤩', '🥳', '🔥', '💯', '⭐', '✨', '💖', '❤️', '💪', '👍', '👏', '🙌', '🎉', '🎊', '🏆', '👑', '💎', '🚀', '⚡', '💥', '🎵', '🎶', '📸', '🎮'],
+      shapes: ['⬛', '⬜', '🔲', '🔳', '🔶', '🔷', '🔸', '🔹', '🔺', '🔻', '💠', '⭕', '❌', '➕', '➖'],
+      arrows: ['⬆️', '⬇️', '⬅️', '➡️', '↗️', '↘️', '↙️', '↖️', '🔄', '🔃'],
+      hands: ['👆', '👇', '👈', '👉', '👊', '✊', '✌️', '🤞', '👌', '👋', '🤙', '✋', '🖐️'],
+    };
+
+    // ステッカーアニメーション
+    const STICKER_ANIMATIONS = [
+      { id: 'none', name: 'なし', class: '' },
+      { id: 'bounce', name: 'バウンス', class: 'sticker-bounce' },
+      { id: 'spin', name: '回転', class: 'sticker-spin' },
+      { id: 'pulse', name: 'パルス', class: 'sticker-pulse' },
+      { id: 'shake', name: 'シェイク', class: 'sticker-shake' },
+    ];
+
+    // エフェクト
+    const EFFECTS = [
+      { id: 'none', name: 'なし', icon: '○' },
+      { id: 'zoom-in', name: 'ズームイン', icon: '🔍' },
+      { id: 'zoom-out', name: 'ズームアウト', icon: '🔎' },
+      { id: 'pan-left', name: 'パン左', icon: '⬅️' },
+      { id: 'pan-right', name: 'パン右', icon: '➡️' },
+      { id: 'kenburns', name: 'ケンバーンズ', icon: '🎥' },
+      { id: 'shake', name: 'シェイク', icon: '📳' },
+      { id: 'bounce', name: 'バウンス', icon: '⬆️' },
+      { id: 'glitch', name: 'グリッチ', icon: '⚡' },
+      { id: 'float', name: 'フロート', icon: '🎈' },
+      { id: 'rotate', name: '回転', icon: '🔄' },
+    ];
+
+    // トランジション
+    const TRANSITIONS = [
+      { id: 'none', name: 'なし', icon: '—' },
+      { id: 'fade', name: 'フェード', icon: '🌫️' },
+      { id: 'slide-left', name: 'スライド左', icon: '⬅️' },
+      { id: 'slide-right', name: 'スライド右', icon: '➡️' },
+      { id: 'zoom', name: 'ズーム', icon: '🔍' },
+      { id: 'flash', name: 'フラッシュ', icon: '💥' },
+    ];
+
+    // フィルター
+    const FILTERS = [
+      { id: 'none', name: 'オリジナル', icon: '🎨' },
+      { id: 'grayscale', name: 'モノクロ', icon: '⬜' },
+      { id: 'sepia', name: 'セピア', icon: '🟤' },
+      { id: 'vintage', name: 'ヴィンテージ', icon: '📷' },
+      { id: 'cool', name: 'クール', icon: '❄️' },
+      { id: 'warm', name: 'ウォーム', icon: '🔥' },
+      { id: 'dramatic', name: 'ドラマチック', icon: '🎭' },
+      { id: 'noir', name: 'ノワール', icon: '🖤' },
+      { id: 'cyberpunk', name: 'サイバー', icon: '🌆' },
+      { id: 'sunset', name: 'サンセット', icon: '🌇' },
+      { id: 'ocean', name: 'オーシャン', icon: '🌊' },
+      { id: 'forest', name: 'フォレスト', icon: '🌲' },
+    ];
+
+    // スピード
+    const SPEED_OPTIONS = [
+      { id: 0.25, name: '0.25x', icon: '🐢' },
+      { id: 0.5, name: '0.5x', icon: '🐌' },
+      { id: 0.75, name: '0.75x', icon: '🚶' },
+      { id: 1, name: '1x', icon: '🏃' },
+      { id: 1.5, name: '1.5x', icon: '🚴' },
+      { id: 2, name: '2x', icon: '🚀' },
+      { id: 3, name: '3x', icon: '⚡' },
+    ];
+
+    // テキストアニメーション
+    const TEXT_ANIMATIONS = [
+      { id: 'none', name: 'なし', icon: '—' },
+      { id: 'pop', name: 'ポップ', icon: '💥' },
+      { id: 'slide', name: 'スライド', icon: '➡️' },
+      { id: 'glow', name: 'グロー', icon: '✨' },
+      { id: 'bounce', name: 'バウンス', icon: '⬆️' },
+    ];
+
+    // プロテンプレート
+    const PRO_TEMPLATES = [
+      { id: 'cinematic', name: '🎬 シネマティック', settings: { filter: 'dramatic', effect: 'kenburns', transition: 'fade', textAnimation: 'slide' }, recommendedMusic: 'cinematic' },
+      { id: 'energetic', name: '⚡ エネルギッシュ', settings: { filter: 'none', effect: 'shake', transition: 'flash', textAnimation: 'pop' }, recommendedMusic: 'upbeat' },
+      { id: 'aesthetic', name: '✨ エステティック', settings: { filter: 'sunset', effect: 'zoom-out', transition: 'fade', textAnimation: 'glow' }, recommendedMusic: 'chill' },
+      { id: 'cyberpunk', name: '🌆 サイバーパンク', settings: { filter: 'cyberpunk', effect: 'glitch', transition: 'flash', textAnimation: 'glow' }, recommendedMusic: 'electronic' },
+      { id: 'vintage', name: '📷 ヴィンテージ', settings: { filter: 'vintage', effect: 'pan-right', transition: 'fade', textAnimation: 'slide' }, recommendedMusic: 'chill' },
+      { id: 'minimal', name: '◻️ ミニマル', settings: { filter: 'none', effect: 'none', transition: 'fade', textAnimation: 'none' }, recommendedMusic: 'chill' },
+    ];
+
+    // 音楽カテゴリ
+    const MUSIC_CATEGORIES = [
+      { id: 'all', name: '🎵 すべて' },
+      { id: 'upbeat', name: '⚡ アップビート' },
+      { id: 'chill', name: '🌙 チル' },
+      { id: 'cinematic', name: '🎬 シネマティック' },
+      { id: 'electronic', name: '🎧 エレクトロ' },
+      { id: 'hiphop', name: '🎤 ヒップホップ' },
+      { id: 'rock', name: '🎸 ロック' },
+    ];
+
+    function ShortVideoEditor() {
+      // 基本状態
+      const [step, setStep] = useState('upload');
+      const [mediaFiles, setMediaFiles] = useState([]);
+      const [scenes, setScenes] = useState([]);
+      const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const [activeTab, setActiveTab] = useState('effects');
+      const [selectedTemplate, setSelectedTemplate] = useState(null);
+      
+      // AI・コンセプト関連
+      const [concept, setConcept] = useState('');
+      const [targetPlatform, setTargetPlatform] = useState('instagram');
+      const [videoStyle, setVideoStyle] = useState('cinematic');
+      const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+      const [aiSuggestions, setAiSuggestions] = useState(null);
+      
+      // ナレーション関連
+      const [narrationText, setNarrationText] = useState('');
+      const [selectedVoice, setSelectedVoice] = useState(AI_VOICES[0]);
+      const [selectedVoiceStyle, setSelectedVoiceStyle] = useState(VOICE_STYLES[0]);
+      const [narrationVolume, setNarrationVolume] = useState(100);
+      const [isSpeaking, setIsSpeaking] = useState(false);
+      const [availableVoices, setAvailableVoices] = useState([]);
+      const [narrationPerScene, setNarrationPerScene] = useState({});
+      
+      // 音楽関連
+      const [selectedMusic, setSelectedMusic] = useState(null);
+      const [musicVolume, setMusicVolume] = useState(70);
+      const [musicCategory, setMusicCategory] = useState('all');
+      const [isPreviewingMusic, setIsPreviewingMusic] = useState(null);
+      
+      // エクスポート
+      const [showExportModal, setShowExportModal] = useState(false);
+      const [exportProgress, setExportProgress] = useState(0);
+      const [isExporting, setIsExporting] = useState(false);
+      
+      const fileInputRef = useRef(null);
+      const audioInputRef = useRef(null);
+      const canvasRef = useRef(null);
+      const audioRef = useRef(null);
+      const previewAudioRef = useRef(null);
+      const playIntervalRef = useRef(null);
+      const synthRef = useRef(null);
+
+      // Web Speech API の音声リストを取得
+      useEffect(() => {
+        const loadVoices = () => {
+          const voices = speechSynthesis.getVoices();
+          setAvailableVoices(voices);
+        };
+        loadVoices();
+        speechSynthesis.onvoiceschanged = loadVoices;
+      }, []);
+
+      // ナレーション再生
+      const speakNarration = (text, voiceConfig, styleConfig) => {
+        if (!text) return;
+        
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // 言語に合った音声を探す
+        const voices = speechSynthesis.getVoices();
+        const targetVoice = voices.find(v => 
+          v.lang.startsWith(voiceConfig.lang.split('-')[0]) &&
+          (voiceConfig.gender === 'female' ? v.name.includes('Female') || v.name.includes('女') || v.name.includes('Kyoko') || v.name.includes('Samantha') :
+           voiceConfig.gender === 'male' ? v.name.includes('Male') || v.name.includes('男') || v.name.includes('Otoya') || v.name.includes('Alex') :
+           true)
+        ) || voices.find(v => v.lang.startsWith(voiceConfig.lang.split('-')[0])) || voices[0];
+        
+        if (targetVoice) utterance.voice = targetVoice;
+        utterance.lang = voiceConfig.lang;
+        utterance.rate = styleConfig.rate;
+        utterance.pitch = styleConfig.pitch;
+        utterance.volume = narrationVolume / 100;
+        
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        
+        speechSynthesis.speak(utterance);
+      };
+
+      // ナレーション停止
+      const stopNarration = () => {
+        speechSynthesis.cancel();
+        setIsSpeaking(false);
+      };
+
+      // シーンにナレーション設定
+      const setSceneNarration = (sceneId, text) => {
+        setNarrationPerScene(prev => ({
+          ...prev,
+          [sceneId]: text
+        }));
+      };
+
+      // AIからナレーション自動生成
+      const generateNarrationFromAI = () => {
+        if (!concept) return;
+        
+        // シナリオに基づいてナレーションを生成
+        const narrations = scenes.map((scene, i) => {
+          if (i === 0) return `${concept.slice(0, 30)}をご紹介します！`;
+          if (i === scenes.length - 1) return 'いいね＆フォローお願いします！';
+          return '';
+        });
+        
+        scenes.forEach((scene, i) => {
+          if (narrations[i]) {
+            setSceneNarration(scene.id, narrations[i]);
+          }
+        });
+        
+        setNarrationText(narrations.filter(n => n).join('\n'));
+      };
+
+      // ファイルアップロード
+      const handleFileUpload = (e) => {
+        const files = Array.from(e.target.files);
+        const newFiles = files.map((file, idx) => ({
+          id: `media-${Date.now()}-${idx}`,
+          file,
+          type: file.type.startsWith('video') ? 'video' : 'image',
+          url: URL.createObjectURL(file),
+          name: file.name,
+        }));
+        setMediaFiles(prev => [...prev, ...newFiles]);
+        
+        const newScenes = newFiles.map((media, i) => createDefaultScene(media, i));
+        setScenes(prev => [...prev, ...newScenes]);
+      };
+
+      // 音声ファイルアップロード
+      const handleAudioUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const url = URL.createObjectURL(file);
+          setSelectedMusic({
+            id: 'custom',
+            name: file.name,
+            url: url,
+            mood: 'カスタム',
+            category: 'custom'
+          });
+        }
+      };
+
+      // デフォルトシーン作成
+      const createDefaultScene = (media, index) => ({
+        id: `scene-${Date.now()}-${index}`,
+        media,
+        duration: 3,
+        speed: 1,
+        effect: 'zoom-in',
+        transition: 'fade',
+        filter: 'none',
+        text: '',
+        textPosition: 'center',
+        textSize: 24,
+        textColor: '#ffffff',
+        textAnimation: 'pop',
+        textShadow: true,
+        brightness: 100,
+        contrast: 100,
+        saturation: 100,
+        stickers: [],
+        narration: '',
+      });
+
+      // AI シナリオ生成
+      const generateAIScenario = async () => {
+        if (!concept.trim() || mediaFiles.length === 0) return;
+        
+        setIsGeneratingAI(true);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const template = PRO_TEMPLATES.find(t => t.id === videoStyle) || PRO_TEMPLATES[0];
+        const suggestedMusic = FREE_MUSIC_LIBRARY.find(m => m.category === template.recommendedMusic);
+        
+        const suggestions = {
+          title: concept.slice(0, 20),
+          hook: `✨ ${concept.slice(0, 30)}`,
+          scenes: mediaFiles.map((media, i) => {
+            const texts = [
+              i === 0 ? '今すぐチェック👀' : '',
+              i === mediaFiles.length - 1 ? 'フォローしてね💖' : '',
+            ];
+            const narrations = [
+              i === 0 ? `${concept.slice(0, 20)}をご紹介！` : '',
+              i === mediaFiles.length - 1 ? 'いいね＆フォローお願いします！' : '',
+            ];
+            return {
+              ...createDefaultScene(media, i),
+              ...template.settings,
+              text: texts[i] || '',
+              duration: i === 0 ? 2 : 3,
+              stickers: i === 0 ? [{ id: `s-${i}`, emoji: '✨', x: 80, y: 20, size: 40, animation: 'pulse' }] : [],
+              narration: narrations[i] || '',
+            };
+          }),
+          callToAction: 'いいね＆フォローお願いします！',
+          recommendedMusic: suggestedMusic,
+          suggestedNarration: `${concept}についてご紹介します。ぜひ最後までご覧ください！`,
+        };
+        
+        setAiSuggestions(suggestions);
+        setScenes(suggestions.scenes);
+        setSelectedMusic(suggestions.recommendedMusic);
+        setSelectedTemplate(videoStyle);
+        setNarrationText(suggestions.suggestedNarration);
+        
+        // シーンごとのナレーションを設定
+        suggestions.scenes.forEach(scene => {
+          if (scene.narration) {
+            setSceneNarration(scene.id, scene.narration);
+          }
+        });
+        
+        setIsGeneratingAI(false);
+        setStep('edit');
+      };
+
+      // シーン更新
+      const updateScene = (sceneId, updates) => {
+        setScenes(prev => prev.map(s => s.id === sceneId ? { ...s, ...updates } : s));
+      };
+
+      // ステッカー追加
+      const addSticker = (emoji) => {
+        if (!scenes[currentSceneIndex]) return;
+        const newSticker = { id: `sticker-${Date.now()}`, emoji, x: 50, y: 50, size: 40, animation: 'none' };
+        updateScene(scenes[currentSceneIndex].id, {
+          stickers: [...scenes[currentSceneIndex].stickers, newSticker],
+        });
+      };
+
+      // ステッカー更新
+      const updateSticker = (stickerId, updates) => {
+        const scene = scenes[currentSceneIndex];
+        if (!scene) return;
+        updateScene(scene.id, {
+          stickers: scene.stickers.map(s => s.id === stickerId ? { ...s, ...updates } : s),
+        });
+      };
+
+      // ステッカー削除
+      const removeSticker = (stickerId) => {
+        const scene = scenes[currentSceneIndex];
+        if (!scene) return;
+        updateScene(scene.id, {
+          stickers: scene.stickers.filter(s => s.id !== stickerId),
+        });
+      };
+
+      // テンプレート適用
+      const applyTemplate = (template) => {
+        setSelectedTemplate(template.id);
+        setScenes(prev => prev.map(scene => ({ ...scene, ...template.settings })));
+        setMusicCategory(template.recommendedMusic);
+      };
+
+      // 音楽プレビュー
+      const previewMusic = (music) => {
+        if (previewAudioRef.current) previewAudioRef.current.pause();
+        if (isPreviewingMusic === music.id) {
+          setIsPreviewingMusic(null);
+          return;
+        }
+        previewAudioRef.current = new Audio(music.url);
+        previewAudioRef.current.volume = musicVolume / 100;
+        previewAudioRef.current.play();
+        setIsPreviewingMusic(music.id);
+        previewAudioRef.current.onended = () => setIsPreviewingMusic(null);
+      };
+
+      // 再生制御
+      const togglePlayback = () => {
+        if (isPlaying) {
+          clearInterval(playIntervalRef.current);
+          if (audioRef.current) audioRef.current.pause();
+          stopNarration();
+          setIsPlaying(false);
+        } else {
+          setIsPlaying(true);
+          if (selectedMusic) {
+            audioRef.current = new Audio(selectedMusic.url);
+            audioRef.current.volume = musicVolume / 100;
+            audioRef.current.play();
+          }
+          
+          // 最初のシーンのナレーション再生
+          const firstSceneNarration = narrationPerScene[scenes[0]?.id];
+          if (firstSceneNarration) {
+            speakNarration(firstSceneNarration, selectedVoice, selectedVoiceStyle);
+          }
+          
+          let time = 0;
+          let lastSceneIndex = 0;
+          playIntervalRef.current = setInterval(() => {
+            time += 0.1;
+            const totalDuration = scenes.reduce((sum, s) => sum + (s.duration / s.speed), 0);
+            if (time >= totalDuration) {
+              time = 0;
+              if (audioRef.current) audioRef.current.currentTime = 0;
+            }
+            let elapsed = 0;
+            for (let i = 0; i < scenes.length; i++) {
+              elapsed += scenes[i].duration / scenes[i].speed;
+              if (time < elapsed) {
+                if (i !== lastSceneIndex) {
+                  // シーンが変わったらナレーション再生
+                  const sceneNarration = narrationPerScene[scenes[i]?.id];
+                  if (sceneNarration) {
+                    speakNarration(sceneNarration, selectedVoice, selectedVoiceStyle);
+                  }
+                  lastSceneIndex = i;
+                }
+                setCurrentSceneIndex(i);
+                break;
+              }
+            }
+          }, 100);
+        }
+      };
+
+      // シーン操作
+      const deleteScene = (index) => {
+        setScenes(prev => prev.filter((_, i) => i !== index));
+        if (currentSceneIndex >= scenes.length - 1) setCurrentSceneIndex(Math.max(0, scenes.length - 2));
+      };
+
+      const moveScene = (index, direction) => {
+        const newIndex = index + direction;
+        if (newIndex < 0 || newIndex >= scenes.length) return;
+        const newScenes = [...scenes];
+        [newScenes[index], newScenes[newIndex]] = [newScenes[newIndex], newScenes[index]];
+        setScenes(newScenes);
+        setCurrentSceneIndex(newIndex);
+      };
+
+      const duplicateScene = (index) => {
+        const scene = scenes[index];
+        const newScene = { ...scene, id: `scene-${Date.now()}`, stickers: [...scene.stickers] };
+        const newScenes = [...scenes];
+        newScenes.splice(index + 1, 0, newScene);
+        setScenes(newScenes);
+      };
+
+      useEffect(() => {
+        return () => {
+          clearInterval(playIntervalRef.current);
+          if (audioRef.current) audioRef.current.pause();
+          if (previewAudioRef.current) previewAudioRef.current.pause();
+          stopNarration();
+        };
+      }, []);
+
+      const filteredMusic = musicCategory === 'all' ? FREE_MUSIC_LIBRARY : FREE_MUSIC_LIBRARY.filter(m => m.category === musicCategory);
+      const totalDuration = scenes.reduce((sum, s) => sum + (s.duration / s.speed), 0);
+      const currentScene = scenes[currentSceneIndex];
+
+      // エクスポート
+      const exportVideo = async () => {
+        setIsExporting(true);
+        setExportProgress(0);
+        for (let i = 0; i <= 100; i += 5) {
+          await new Promise(r => setTimeout(r, 100));
+          setExportProgress(i);
+        }
+        alert('動画のエクスポートが完了しました！（デモ）\n※実際のエクスポートにはサーバーサイド処理が必要です');
+        setIsExporting(false);
+        setShowExportModal(false);
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white font-sans">
+          <canvas ref={canvasRef} className="hidden" />
+          
+          {/* ヘッダー */}
+          <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10 px-4 py-3">
+            <div className="flex items-center justify-between max-w-7xl mx-auto">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🎬</span>
+                <span className="font-bold text-sm sm:text-base">Short Video AI Ultimate+</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {step === 'edit' && (
+                  <>
+                    <span className="text-xs text-white/60 hidden sm:inline">{scenes.length}シーン・{totalDuration.toFixed(1)}秒</span>
+                    <button onClick={() => setShowExportModal(true)} disabled={scenes.length === 0} className="px-3 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 font-medium text-sm disabled:opacity-50 active:scale-95">
+                      📤 書き出し
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </header>
+
+          <div className="max-w-7xl mx-auto p-4">
+            {/* ステップ1: アップロード */}
+            {step === 'upload' && (
+              <div className="animate-fadeIn max-w-2xl mx-auto">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold mb-3">🎬 ショート動画を作成</h2>
+                  <p className="text-white/70">AIナレーション付きプロ品質動画</p>
+                </div>
+
+                <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-white/30 rounded-3xl p-12 text-center cursor-pointer hover:border-orange-400 hover:bg-white/5 transition-all active:scale-[0.98]">
+                  <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple onChange={handleFileUpload} className="hidden" />
+                  <div className="text-6xl mb-4">📁</div>
+                  <p className="text-xl font-medium mb-2">素材をアップロード</p>
+                  <p className="text-white/60">画像・動画を選択</p>
+                </div>
+
+                {mediaFiles.length > 0 && (
+                  <div className="mt-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="font-medium">アップロード済み ({mediaFiles.length})</p>
+                      <button onClick={() => { setMediaFiles([]); setScenes([]); }} className="text-sm text-white/60">クリア</button>
+                    </div>
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                      {mediaFiles.map(media => (
+                        <div key={media.id} className="w-16 h-24 rounded-lg overflow-hidden bg-black flex-shrink-0">
+                          {media.type === 'video' ? <video src={media.url} className="w-full h-full object-cover" /> : <img src={media.url} className="w-full h-full object-cover" />}
+                        </div>
+                      ))}
+                    </div>
+                    <button onClick={() => setStep('concept')} className="w-full mt-4 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 font-bold text-lg active:scale-[0.98]">
+                      次へ：AIでシナリオ生成 ✨
+                    </button>
+                  </div>
+                )}
+
+                {/* 機能紹介 */}
+                <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { icon: '🤖', text: 'AI自動編集' },
+                    { icon: '🎙️', text: 'AIナレーション' },
+                    { icon: '😀', text: 'ステッカー' },
+                    { icon: '🎵', text: 'フリー音楽' },
+                  ].map((f, i) => (
+                    <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
+                      <div className="text-3xl mb-2">{f.icon}</div>
+                      <p className="text-sm">{f.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ステップ2: コンセプト入力 */}
+            {step === 'concept' && (
+              <div className="animate-fadeIn max-w-2xl mx-auto">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold mb-2">🤖 AIシナリオ生成</h2>
+                  <p className="text-white/70">コンセプトを入力するだけ</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">📝 コンセプト・内容</label>
+                    <textarea value={concept} onChange={(e) => setConcept(e.target.value)} placeholder="例: 新商品のカフェラテを紹介。おしゃれなカフェの雰囲気で..." className="w-full h-32 px-4 py-3 rounded-2xl bg-white/10 border border-white/20 focus:border-orange-400 focus:outline-none resize-none" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">📱 プラットフォーム</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[{ id: 'instagram', name: 'Instagram', icon: '📸' }, { id: 'tiktok', name: 'TikTok', icon: '🎵' }, { id: 'youtube', name: 'YouTube', icon: '▶️' }].map(p => (
+                        <button key={p.id} onClick={() => setTargetPlatform(p.id)} className={`p-3 rounded-xl border-2 ${targetPlatform === p.id ? 'border-orange-400 bg-orange-500/20' : 'border-white/20 bg-white/5'}`}>
+                          <div className="text-2xl">{p.icon}</div>
+                          <div className="text-xs mt-1">{p.name}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">🎨 スタイル</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {PRO_TEMPLATES.map(t => (
+                        <button key={t.id} onClick={() => setVideoStyle(t.id)} className={`p-3 rounded-xl border-2 ${videoStyle === t.id ? 'border-orange-400 bg-orange-500/20' : 'border-white/20 bg-white/5'}`}>
+                          <div className="text-sm">{t.name}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button onClick={() => setStep('upload')} className="flex-1 py-3 rounded-xl bg-white/10 font-medium">戻る</button>
+                    <button onClick={generateAIScenario} disabled={!concept.trim() || isGeneratingAI} className={`flex-1 py-3 rounded-xl font-medium ${isGeneratingAI ? 'ai-thinking' : 'bg-gradient-to-r from-orange-500 to-red-500'} disabled:opacity-50`}>
+                      {isGeneratingAI ? <span className="flex items-center justify-center gap-2"><span className="animate-spin">⚙️</span> AI生成中...</span> : '🤖 AIで生成'}
+                    </button>
+                  </div>
+
+                  <button onClick={() => setStep('edit')} className="w-full text-center text-sm text-white/60 hover:text-white">スキップして手動編集 →</button>
+                </div>
+              </div>
+            )}
+
+            {/* ステップ3: エディター */}
+            {step === 'edit' && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* プレビュー */}
+                <div className="order-1">
+                  <div className="lg:sticky lg:top-20">
+                    {aiSuggestions && (
+                      <div className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-400/30">
+                        <p className="font-bold mb-2">🤖 AIからの提案</p>
+                        <p className="text-sm text-white/80">📌 {aiSuggestions.hook}</p>
+                        <p className="text-sm text-white/80">🎯 {aiSuggestions.callToAction}</p>
+                      </div>
+                    )}
+
+                    {/* プレビュー画面 */}
+                    <div className="relative mx-auto w-full max-w-[280px] aspect-[9/16] rounded-[2rem] bg-black border-4 border-white/20 overflow-hidden shadow-2xl">
+                      <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-30" />
+                      
+                      {currentScene && (
+                        <div className={`absolute inset-0 overflow-hidden ${currentScene.filter !== 'none' ? `filter-${currentScene.filter}` : ''}`} style={{ '--duration': `${currentScene.duration / currentScene.speed}s`, filter: `brightness(${currentScene.brightness}%) contrast(${currentScene.contrast}%) saturate(${currentScene.saturation}%)` }}>
+                          {currentScene.media.type === 'video' ? (
+                            <video src={currentScene.media.url} className={`w-full h-full object-cover ${currentScene.effect !== 'none' ? `effect-${currentScene.effect}` : ''}`} autoPlay={isPlaying} muted loop playsInline />
+                          ) : (
+                            <img src={currentScene.media.url} className={`w-full h-full object-cover ${currentScene.effect !== 'none' ? `effect-${currentScene.effect}` : ''}`} />
+                          )}
+                          
+                          {currentScene.text && (
+                            <div className={`absolute inset-x-4 flex items-center justify-center ${currentScene.textPosition === 'top' ? 'top-16' : currentScene.textPosition === 'bottom' ? 'bottom-16' : 'top-1/2 -translate-y-1/2'}`}>
+                              <p className={`text-center font-bold px-4 py-2 rounded-xl ${currentScene.textAnimation !== 'none' ? `text-${currentScene.textAnimation}` : ''}`} style={{ fontSize: `${currentScene.textSize}px`, color: currentScene.textColor, textShadow: currentScene.textShadow ? '2px 2px 8px rgba(0,0,0,0.8)' : 'none' }}>
+                                {currentScene.text}
+                              </p>
+                            </div>
+                          )}
+
+                          {currentScene.stickers.map(sticker => (
+                            <div key={sticker.id} className={`absolute ${STICKER_ANIMATIONS.find(a => a.id === sticker.animation)?.class || ''}`} style={{ left: `${sticker.x}%`, top: `${sticker.y}%`, fontSize: `${sticker.size}px`, transform: 'translate(-50%, -50%)' }}>
+                              {sticker.emoji}
+                            </div>
+                          ))}
+
+                          <div className="absolute top-8 left-3 right-3 flex gap-1 z-20">
+                            {scenes.map((_, i) => (<div key={i} className={`h-1 flex-1 rounded-full ${i === currentSceneIndex ? 'bg-white' : 'bg-white/30'}`} />))}
+                          </div>
+
+                          {currentScene.speed !== 1 && <div className="absolute bottom-4 right-4 px-2 py-1 rounded-lg bg-black/50 text-xs">{currentScene.speed}x</div>}
+                          
+                          {/* ナレーション表示 */}
+                          {isSpeaking && (
+                            <div className="absolute bottom-20 left-4 right-4 flex items-center justify-center gap-1">
+                              <div className="px-3 py-2 rounded-full bg-black/70 flex items-center gap-2">
+                                <div className="flex gap-0.5 items-end h-4">
+                                  {[1,2,3,4,5].map(i => (<div key={i} className="w-1 bg-orange-500 rounded-full speaking-bar" style={{ height: '100%', animationDelay: `${i * 0.1}s` }} />))}
+                                </div>
+                                <span className="text-xs">🎙️ 読み上げ中...</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 再生コントロール */}
+                    <div className="flex items-center justify-center gap-4 mt-6">
+                      <button onClick={() => setCurrentSceneIndex(Math.max(0, currentSceneIndex - 1))} className="p-3 rounded-full bg-white/10 active:scale-95">⏮️</button>
+                      <button onClick={togglePlayback} className="w-14 h-14 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-2xl active:scale-95">
+                        {isPlaying ? '⏸️' : '▶️'}
+                      </button>
+                      <button onClick={() => setCurrentSceneIndex(Math.min(scenes.length - 1, currentSceneIndex + 1))} className="p-3 rounded-full bg-white/10 active:scale-95">⏭️</button>
+                    </div>
+                    <p className="text-center text-sm text-white/60 mt-2">
+                      シーン {currentSceneIndex + 1} / {scenes.length}
+                      {selectedMusic && <span className="ml-2">🎵</span>}
+                      {isSpeaking && <span className="ml-2">🎙️</span>}
+                    </p>
+
+                    <button onClick={() => fileInputRef.current?.click()} className="w-full mt-4 p-3 rounded-xl border-2 border-dashed border-white/30 text-white/70 active:scale-[0.98]">＋ 素材追加</button>
+                  </div>
+                </div>
+
+                {/* 編集パネル */}
+                <div className="order-2 space-y-4">
+                  {/* タブ */}
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    {[
+                      { id: 'effects', name: '✨ エフェクト' },
+                      { id: 'text', name: '📝 テキスト' },
+                      { id: 'narration', name: '🎙️ ナレーション' },
+                      { id: 'stickers', name: '😀 ステッカー' },
+                      { id: 'speed', name: '⏱️ スピード' },
+                      { id: 'music', name: '🎵 音楽' },
+                      { id: 'scenes', name: '🎬 シーン' },
+                    ].map(tab => (
+                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`px-3 py-2 rounded-xl whitespace-nowrap text-sm ${activeTab === tab.id ? 'bg-orange-500' : 'bg-white/10'}`}>
+                        {tab.name}
+                      </button>
+                    ))}
+                  </div>
+
+                  {currentScene && (
+                    <>
+                      {/* エフェクトタブ */}
+                      {activeTab === 'effects' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">🎥 モーション</h4>
+                            <div className="grid grid-cols-4 gap-2">
+                              {EFFECTS.map(e => (
+                                <button key={e.id} onClick={() => updateScene(currentScene.id, { effect: e.id })} className={`p-2 rounded-xl text-center active:scale-95 ${currentScene.effect === e.id ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}>
+                                  <div className="text-lg">{e.icon}</div>
+                                  <div className="text-[10px]">{e.name}</div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">🔄 トランジション</h4>
+                            <div className="grid grid-cols-4 gap-2">
+                              {TRANSITIONS.map(t => (
+                                <button key={t.id} onClick={() => updateScene(currentScene.id, { transition: t.id })} className={`p-2 rounded-xl text-center active:scale-95 ${currentScene.transition === t.id ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}>
+                                  <div className="text-lg">{t.icon}</div>
+                                  <div className="text-[10px]">{t.name}</div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">🎨 フィルター</h4>
+                            <div className="grid grid-cols-4 gap-2">
+                              {FILTERS.map(f => (
+                                <button key={f.id} onClick={() => updateScene(currentScene.id, { filter: f.id })} className={`p-2 rounded-xl text-center active:scale-95 ${currentScene.filter === f.id ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}>
+                                  <div className="text-lg">{f.icon}</div>
+                                  <div className="text-[10px]">{f.name}</div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-2">⏱️ 表示時間: {currentScene.duration}秒</h4>
+                            <input type="range" min="1" max="10" step="0.5" value={currentScene.duration} onChange={(e) => updateScene(currentScene.id, { duration: parseFloat(e.target.value) })} className="w-full" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* テキストタブ */}
+                      {activeTab === 'text' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <input type="text" value={currentScene.text} onChange={(e) => updateScene(currentScene.id, { text: e.target.value })} placeholder="テキストを入力..." className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:border-orange-400 focus:outline-none" />
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">📍 位置</h4>
+                            <div className="grid grid-cols-3 gap-2">
+                              {['top', 'center', 'bottom'].map(pos => (
+                                <button key={pos} onClick={() => updateScene(currentScene.id, { textPosition: pos })} className={`p-3 rounded-xl ${currentScene.textPosition === pos ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}>
+                                  {pos === 'top' ? '上' : pos === 'center' ? '中央' : '下'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">✨ アニメーション</h4>
+                            <div className="grid grid-cols-5 gap-2">
+                              {TEXT_ANIMATIONS.map(a => (
+                                <button key={a.id} onClick={() => updateScene(currentScene.id, { textAnimation: a.id })} className={`p-2 rounded-xl ${currentScene.textAnimation === a.id ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}>
+                                  <div className="text-lg">{a.icon}</div>
+                                  <div className="text-[10px]">{a.name}</div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10 flex items-center justify-between">
+                            <span>🎨 文字色</span>
+                            <input type="color" value={currentScene.textColor} onChange={(e) => updateScene(currentScene.id, { textColor: e.target.value })} />
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-2">📏 サイズ: {currentScene.textSize}px</h4>
+                            <input type="range" min="12" max="48" value={currentScene.textSize} onChange={(e) => updateScene(currentScene.id, { textSize: parseInt(e.target.value) })} className="w-full" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* ナレーションタブ */}
+                      {activeTab === 'narration' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          {/* 現在のシーンのナレーション */}
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">🎙️ シーン {currentSceneIndex + 1} のナレーション</h4>
+                            <textarea
+                              value={narrationPerScene[currentScene.id] || ''}
+                              onChange={(e) => setSceneNarration(currentScene.id, e.target.value)}
+                              placeholder="このシーンで読み上げるテキスト..."
+                              className="w-full h-24 px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:border-orange-400 focus:outline-none resize-none"
+                            />
+                            <div className="flex gap-2 mt-3">
+                              <button
+                                onClick={() => speakNarration(narrationPerScene[currentScene.id] || '', selectedVoice, selectedVoiceStyle)}
+                                disabled={!narrationPerScene[currentScene.id] || isSpeaking}
+                                className="flex-1 py-2 rounded-xl bg-orange-500 disabled:opacity-50 flex items-center justify-center gap-2"
+                              >
+                                {isSpeaking ? '🔊 再生中...' : '▶️ 試聴'}
+                              </button>
+                              <button onClick={stopNarration} disabled={!isSpeaking} className="px-4 py-2 rounded-xl bg-white/10 disabled:opacity-50">
+                                ⏹️
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* 音声選択 */}
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">👤 音声タイプ</h4>
+                            <div className="grid grid-cols-4 gap-2">
+                              {AI_VOICES.map(voice => (
+                                <button
+                                  key={voice.id}
+                                  onClick={() => setSelectedVoice(voice)}
+                                  className={`p-2 rounded-xl text-center active:scale-95 ${selectedVoice.id === voice.id ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}
+                                >
+                                  <div className="text-xl">{voice.icon}</div>
+                                  <div className="text-[10px] mt-1">{voice.name.split('（')[0].split(' ')[0]}</div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 音声スタイル */}
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">🎭 話し方</h4>
+                            <div className="grid grid-cols-4 gap-2">
+                              {VOICE_STYLES.map(style => (
+                                <button
+                                  key={style.id}
+                                  onClick={() => setSelectedVoiceStyle(style)}
+                                  className={`p-2 rounded-xl text-center active:scale-95 ${selectedVoiceStyle.id === style.id ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}
+                                >
+                                  <div className="text-sm">{style.name}</div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 音量 */}
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-2">🔊 ナレーション音量: {narrationVolume}%</h4>
+                            <input type="range" min="0" max="100" value={narrationVolume} onChange={(e) => setNarrationVolume(parseInt(e.target.value))} className="w-full" />
+                          </div>
+
+                          {/* AI自動生成 */}
+                          <button
+                            onClick={generateNarrationFromAI}
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 font-medium flex items-center justify-center gap-2"
+                          >
+                            🤖 AIでナレーション自動生成
+                          </button>
+
+                          <p className="text-xs text-white/50 text-center">💡 Web Speech APIを使用してブラウザで音声合成を行います</p>
+                        </div>
+                      )}
+
+                      {/* ステッカータブ */}
+                      {activeTab === 'stickers' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          {currentScene.stickers.length > 0 && (
+                            <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                              <h4 className="font-medium mb-3">📌 配置済み</h4>
+                              <div className="space-y-2">
+                                {currentScene.stickers.map(sticker => (
+                                  <div key={sticker.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+                                    <span className="text-2xl">{sticker.emoji}</span>
+                                    <select value={sticker.animation} onChange={(e) => updateSticker(sticker.id, { animation: e.target.value })} className="flex-1 px-2 py-1 rounded bg-white/10 border border-white/20 text-sm">
+                                      {STICKER_ANIMATIONS.map(a => (<option key={a.id} value={a.id}>{a.name}</option>))}
+                                    </select>
+                                    <input type="range" min="20" max="80" value={sticker.size} onChange={(e) => updateSticker(sticker.id, { size: parseInt(e.target.value) })} className="w-16" />
+                                    <button onClick={() => removeSticker(sticker.id)} className="p-2 rounded-lg bg-red-500/20 text-red-400">🗑️</button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {Object.entries(STICKER_LIBRARY).map(([category, emojis]) => (
+                            <div key={category} className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                              <h4 className="font-medium mb-3">{category === 'emoji' ? '😀 絵文字' : category === 'shapes' ? '🔷 シェイプ' : category === 'arrows' ? '➡️ 矢印' : '👍 ハンド'}</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {emojis.map((emoji, i) => (
+                                  <button key={i} onClick={() => addSticker(emoji)} className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-xl active:scale-95">{emoji}</button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* スピードタブ */}
+                      {activeTab === 'speed' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-4">⏱️ 再生速度</h4>
+                            <div className="grid grid-cols-4 gap-2">
+                              {SPEED_OPTIONS.map(s => (
+                                <button key={s.id} onClick={() => updateScene(currentScene.id, { speed: s.id })} className={`p-3 rounded-xl text-center active:scale-95 ${currentScene.speed === s.id ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/20'}`}>
+                                  <div className="text-2xl">{s.icon}</div>
+                                  <div className="text-sm mt-1">{s.name}</div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <p className="font-medium">実際の再生時間: {(currentScene.duration / currentScene.speed).toFixed(1)}秒</p>
+                            <p className="text-sm text-white/60 mt-1">{currentScene.speed < 1 ? '🐢 スローモーション' : currentScene.speed > 1 ? '🚀 早送り' : '🏃 通常速度'}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 音楽タブ */}
+                      {activeTab === 'music' && (
+                        <div className="space-y-4 animate-fadeIn">
+                          {selectedMusic && (
+                            <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-2xl p-4 border border-orange-400/30">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium">🎵 {selectedMusic.name}</p>
+                                  <p className="text-xs text-white/60">{selectedMusic.mood}</p>
+                                </div>
+                                <button onClick={() => setSelectedMusic(null)} className="p-2 rounded-lg bg-white/10">✕</button>
+                              </div>
+                              <div className="mt-3">
+                                <p className="text-xs text-white/60 mb-1">音量: {musicVolume}%</p>
+                                <input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(parseInt(e.target.value))} className="w-full" />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 自分の音源をアップロード */}
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <h4 className="font-medium mb-3">📁 自分の音源を使う</h4>
+                            <button onClick={() => audioInputRef.current?.click()} className="w-full py-3 rounded-xl border-2 border-dashed border-white/30 text-white/70 hover:border-orange-400 active:scale-[0.98]">
+                              ＋ 音声ファイルをアップロード
+                            </button>
+                            <input ref={audioInputRef} type="file" accept="audio/*" onChange={handleAudioUpload} className="hidden" />
+                            <p className="text-xs text-white/50 mt-2 text-center">MP3, WAV, M4A対応</p>
+                          </div>
+
+                          <div className="flex gap-2 overflow-x-auto pb-2">
+                            {MUSIC_CATEGORIES.map(cat => (
+                              <button key={cat.id} onClick={() => setMusicCategory(cat.id)} className={`px-3 py-2 rounded-lg whitespace-nowrap text-sm ${musicCategory === cat.id ? 'bg-orange-500' : 'bg-white/10'}`}>{cat.name}</button>
+                            ))}
+                          </div>
+
+                          <div className="bg-white/5 rounded-2xl p-4 border border-white/10 max-h-[250px] overflow-y-auto">
+                            {filteredMusic.map(music => (
+                              <div key={music.id} className={`flex items-center gap-3 p-3 rounded-xl mb-2 ${selectedMusic?.id === music.id ? 'bg-orange-500/20 border border-orange-400/50' : 'bg-white/5'}`}>
+                                <button onClick={() => previewMusic(music)} className={`w-10 h-10 rounded-full flex items-center justify-center ${isPreviewingMusic === music.id ? 'bg-orange-500' : 'bg-white/20'}`}>
+                                  {isPreviewingMusic === music.id ? '⏸️' : '▶️'}
+                                </button>
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">{music.name}</p>
+                                  <p className="text-xs text-white/60">{music.mood}</p>
+                                </div>
+                                <button onClick={() => setSelectedMusic(music)} className={`px-3 py-1.5 rounded-lg text-xs ${selectedMusic?.id === music.id ? 'bg-orange-500' : 'bg-white/10'}`}>
+                                  {selectedMusic?.id === music.id ? '✓' : '使用'}
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-xs text-white/50 text-center">🎵 Pixabay提供 - 著作権フリー</p>
+                        </div>
+                      )}
+
+                      {/* シーンタブ */}
+                      {activeTab === 'scenes' && (
+                        <div className="space-y-3 animate-fadeIn max-h-[500px] overflow-y-auto">
+                          {scenes.map((scene, index) => (
+                            <div key={scene.id} onClick={() => setCurrentSceneIndex(index)} className={`flex items-center gap-3 p-3 rounded-xl ${currentSceneIndex === index ? 'bg-orange-500/30 border-2 border-orange-400' : 'bg-white/5 border border-white/10'}`}>
+                              <div className="w-12 h-20 rounded-lg overflow-hidden bg-black flex-shrink-0">
+                                {scene.media.type === 'video' ? <video src={scene.media.url} className="w-full h-full object-cover" /> : <img src={scene.media.url} className="w-full h-full object-cover" />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm">シーン {index + 1}</p>
+                                <p className="text-xs text-white/60">{(scene.duration / scene.speed).toFixed(1)}秒{scene.speed !== 1 ? ` (${scene.speed}x)` : ''}</p>
+                                {narrationPerScene[scene.id] && <p className="text-xs text-orange-400 truncate">🎙️ {narrationPerScene[scene.id].slice(0, 15)}...</p>}
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <div className="flex gap-1">
+                                  <button onClick={(e) => { e.stopPropagation(); moveScene(index, -1); }} disabled={index === 0} className="p-1.5 rounded bg-white/10 disabled:opacity-30 text-xs">↑</button>
+                                  <button onClick={(e) => { e.stopPropagation(); moveScene(index, 1); }} disabled={index === scenes.length - 1} className="p-1.5 rounded bg-white/10 disabled:opacity-30 text-xs">↓</button>
+                                </div>
+                                <div className="flex gap-1">
+                                  <button onClick={(e) => { e.stopPropagation(); duplicateScene(index); }} className="p-1.5 rounded bg-white/10 text-xs">📋</button>
+                                  <button onClick={(e) => { e.stopPropagation(); deleteScene(index); }} className="p-1.5 rounded bg-red-500/20 text-red-400 text-xs">🗑️</button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* エクスポートモーダル */}
+          {showExportModal && (
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-gray-900 rounded-3xl p-6 max-w-md w-full border border-white/10">
+                <h3 className="text-xl font-bold mb-4 text-center">📤 動画を書き出し</h3>
+                {!isExporting ? (
+                  <>
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 mb-4">
+                      <p className="text-sm">📐 解像度: 1080 x 1920</p>
+                      <p className="text-sm">🎬 シーン: {scenes.length}</p>
+                      <p className="text-sm">⏱️ 長さ: {totalDuration.toFixed(1)}秒</p>
+                      <p className="text-sm">🎵 BGM: {selectedMusic ? selectedMusic.name : 'なし'}</p>
+                      <p className="text-sm">🎙️ ナレーション: {Object.keys(narrationPerScene).length}シーン</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <button onClick={() => setShowExportModal(false)} className="flex-1 py-3 rounded-xl bg-white/10">キャンセル</button>
+                      <button onClick={exportVideo} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-500">書き出し</button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="relative w-32 h-32 mx-auto mb-4">
+                      <svg className="w-full h-full -rotate-90">
+                        <circle cx="64" cy="64" r="56" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
+                        <circle cx="64" cy="64" r="56" fill="none" stroke="url(#grad)" strokeWidth="8" strokeDasharray={`${exportProgress * 3.52} 352`} strokeLinecap="round" />
+                        <defs><linearGradient id="grad"><stop offset="0%" stopColor="#f97316" /><stop offset="100%" stopColor="#ef4444" /></linearGradient></defs>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold">{exportProgress}%</div>
+                    </div>
+                    <p>{exportProgress < 100 ? '書き出し中...' : '完了！'}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<ShortVideoEditor />);
+  </script>
+</body>
+</html>

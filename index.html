@@ -592,7 +592,39 @@
       .flow-track{grid-template-columns:1fr}
       .mobile-bubbles{flex-direction:column;align-items:center}
     }
-  </style>
+  
+    /* Cost Comparison Section */
+    .cost-compare-wrap{display:flex;align-items:stretch;gap:24px;margin-top:32px}
+    .cost-compare-col{flex:1;border-radius:var(--r-md);overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+    .cost-compare-header{padding:14px 20px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+    .cost-compare-icon{font-size:18px}
+    .red-bg{background:rgba(255,60,60,.15);color:#ff6b6b;border-bottom:1px solid rgba(255,60,60,.2)}
+    .green-bg{background:rgba(34,160,107,.15);color:#22a06b;border-bottom:1px solid rgba(34,160,107,.2)}
+    .cost-compare-items{padding:16px}
+    .cost-item{padding:14px 16px;border-radius:8px;margin-bottom:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+    .cost-item-label{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+    .cost-item-price{display:block;font-size:26px;font-weight:800;color:#ff8c8c;font-family:'Inter',sans-serif;margin:4px 0}
+    .cost-item-price small{font-size:13px;font-weight:400;opacity:.7}
+    .cost-item-note{display:block;font-size:12px;color:var(--c-sub);line-height:1.5}
+    .green-item{border-color:rgba(34,160,107,.15)}
+    .green-item .cost-item-label{color:#6dd4a8}
+    .green-price{color:#22a06b !important;font-size:30px !important}
+    .highlight-price{background:rgba(34,160,107,.08);border-color:rgba(34,160,107,.25)}
+    .cost-total{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;border-radius:8px;font-weight:700}
+    .red-total{background:rgba(255,60,60,.1);color:#ff6b6b}
+    .green-total{background:rgba(34,160,107,.12);color:#22a06b}
+    .cost-total-price{font-size:22px;font-family:'Inter',sans-serif}
+    .cost-total-price small{font-size:12px;font-weight:400;opacity:.7}
+    .cost-total-price strong{font-size:26px}
+    .cost-compare-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:60px}
+    .arrow-icon{font-size:36px;color:#22a06b;font-weight:bold}
+    .arrow-text{font-size:12px;color:var(--c-sub);white-space:nowrap;margin-top:4px}
+    @media(max-width:768px){
+      .cost-compare-wrap{flex-direction:column}
+      .cost-compare-arrow{flex-direction:row;gap:8px;padding:8px 0}
+      .arrow-icon{font-size:24px;transform:rotate(90deg)}
+    }
+    </style>
 </head>
 <body>
   <!-- Background Gears (reduced to 6) -->
@@ -863,91 +895,84 @@
 
     <!-- ═══════════ COST ESTIMATION ═══════════ -->
     <section class="section section-border" id="cost">
-      <div class="container">
-        <div class="section-head">
-          <div class="eyebrow red">💸 HIDDEN COST</div>
-          <h2>「教育にかかっているコスト」<br>正確に把握していますか？</h2>
-          <p>新人OJTだけでなく、在籍社員の定期教育も毎月コストを生んでいます。</p>
-        </div>
+<div class="container">
+  <div class="section-head">
+    <span class="eyebrow green">COST COMPARISON</span>
+    <h2>導入前後のコスト比較</h2>
+    <p class="section-desc">社内教育にかかる「見えないコスト」、可視化したことはありますか？</p>
+  </div>
 
-        <div style="text-align:center;margin-bottom:28px">
-          <div class="cost-caveat">※ 以下は一定の前提に基づく試算例です（時給3,000円・新人OJT週5h・生産性低下70%・資料作成月10h・会議月1回2.5h×2.5人・定期教育月5h×在籍の25%）。実際のコストは企業ごとに異なります。</div>
+  <div class="cost-compare-wrap">
+    <div class="cost-compare-col cost-before">
+      <div class="cost-compare-header red-bg">
+        <span class="cost-compare-icon">⚠</span>
+        <span>従来の社内教育コスト（月額）</span>
+      </div>
+      <div class="cost-compare-items">
+        <div class="cost-item">
+          <span class="cost-item-label">🎓 新人OJT損失</span>
+          <span class="cost-item-price">¥110,000</span>
+          <span class="cost-item-note">新人1人あたり・月<br>人件費＋生産性損失</span>
         </div>
-
-        <div class="cost-breakdown">
-          <div class="cost-card">
-            <div class="cost-card-label">🎓 新人OJT損失</div>
-            <div class="cost-card-num">¥110,000</div>
-            <div class="cost-card-note">新人1人あたり・月<br>人件費＋生産性損失</div>
-          </div>
-          <div class="cost-card">
-            <div class="cost-card-label">📄 資料作成・カリキュラム設計</div>
-            <div class="cost-card-num">¥30,000</div>
-            <div class="cost-card-note">月10時間 × 時給3,000円<br>新人増加で更新コストも増加</div>
-          </div>
-          <div class="cost-card">
-            <div class="cost-card-label">🗣️ 教育方針会議</div>
-            <div class="cost-card-num">¥18,750</div>
-            <div class="cost-card-note">月1回 2.5h × 2.5人<br>× 時給3,000円</div>
-          </div>
-          <div class="cost-card orange">
-            <div class="cost-badge">在籍人数に比例</div>
-            <div class="cost-card-label">📚 在籍社員の定期教育</div>
-            <div class="cost-card-num">¥112,500〜</div>
-            <div class="cost-card-note">30名規模の場合<br>5h × 7.5人 × 3,000円</div>
-          </div>
+        <div class="cost-item">
+          <span class="cost-item-label">📄 資料作成・カリキュラム設計</span>
+          <span class="cost-item-price">¥30,000</span>
+          <span class="cost-item-note">月10時間 × 時給3,000円<br>新人増加で更新コストも増加</span>
         </div>
-
-        <div style="margin-bottom:14px">
-          <div style="font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--c-text-dim)">📊 在籍人数別：月間教育コスト総額（試算） vs サービス料</div>
+        <div class="cost-item">
+          <span class="cost-item-label">🗣️ 教育方針会議</span>
+          <span class="cost-item-price">¥18,750</span>
+          <span class="cost-item-note">月1回 2.5h × 2.5人 × 時給3,000円</span>
         </div>
-        <div class="cost-table">
-          <div class="cost-row head">
-            <div class="cost-cell head-label">在籍人数</div>
-            <div class="cost-cell head-label gold-col">サービス料/月</div>
-            <div class="cost-cell head-label orange">定期教育コスト/月</div>
-            <div class="cost-cell head-label red">新人1人いる月の<br>総コスト試算</div>
-            <div class="cost-cell head-label green">コスト比較</div>
-          </div>
-          <div class="cost-row even">
-            <div class="cost-cell val-name">30名</div>
-            <div class="cost-cell gold-col">¥30,000</div>
-            <div class="cost-cell val-orange">¥112,500</div>
-            <div class="cost-cell val-red">¥271,250</div>
-            <div class="cost-cell val-green">試算コストの<br>約9分の1</div>
-          </div>
-          <div class="cost-row">
-            <div class="cost-cell val-name">50名</div>
-            <div class="cost-cell gold-col">¥50,000</div>
-            <div class="cost-cell val-orange">¥187,500</div>
-            <div class="cost-cell val-red">¥346,250</div>
-            <div class="cost-cell val-green">試算コストの<br>約7分の1</div>
-          </div>
-          <div class="cost-row even">
-            <div class="cost-cell val-name">100名</div>
-            <div class="cost-cell gold-col">¥100,000</div>
-            <div class="cost-cell val-orange">¥375,000</div>
-            <div class="cost-cell val-red">¥533,750</div>
-            <div class="cost-cell val-green">試算コストの<br>約5分の1</div>
-          </div>
-          <div class="cost-row">
-            <div class="cost-cell val-name">200名</div>
-            <div class="cost-cell gold-col">¥200,000</div>
-            <div class="cost-cell val-orange">¥750,000</div>
-            <div class="cost-cell val-red">¥908,750</div>
-            <div class="cost-cell val-green">試算コストの<br>約4分の1</div>
-          </div>
+        <div class="cost-item">
+          <span class="cost-item-label">📚 在籍社員の定期教育</span>
+          <span class="cost-item-price">¥112,500〜</span>
+          <span class="cost-item-note">30名規模の場合<br>5h × 7.5人 × 3,000円</span>
         </div>
-
-        <div class="cost-summary">
-          <p>
-            新人教育だけでなく、<span class="hl-orange">在籍社員の定期教育コストも含めると損失はさらに大きくなります。</span><br>
-            上記の試算条件では、<span class="hl-green">サービス料は月間教育コストの4〜9分の1程度。</span><br>
-            ベテランの時間を解放し、本来の売上を生み出す投資として検討いただけます。
-          </p>
+        <div class="cost-total red-total">
+          <span>合計</span>
+          <span class="cost-total-price">¥271,250〜<small>/月</small></span>
         </div>
       </div>
-    </section>
+    </div>
+
+    <div class="cost-compare-arrow">
+      <span class="arrow-icon">→</span>
+      <span class="arrow-text">導入すると</span>
+    </div>
+
+    <div class="cost-compare-col cost-after">
+      <div class="cost-compare-header green-bg">
+        <span class="cost-compare-icon">✓</span>
+        <span>産業技術アカデミー利用時</span>
+      </div>
+      <div class="cost-compare-items">
+        <div class="cost-item green-item">
+          <span class="cost-item-label">🎓 OJT時間を大幅削減</span>
+          <span class="cost-item-note">体系化された動画教材で<br>自習＋確認テストに置き換え</span>
+        </div>
+        <div class="cost-item green-item">
+          <span class="cost-item-label">📄 資料作成が不要に</span>
+          <span class="cost-item-note">178本以上のコンテンツを<br>そのまま研修に活用</span>
+        </div>
+        <div class="cost-item green-item">
+          <span class="cost-item-label">🗣️ 会議時間を最小化</span>
+          <span class="cost-item-note">カリキュラム設計済みで<br>方針のすり合わせが不要に</span>
+        </div>
+        <div class="cost-item green-item highlight-price">
+          <span class="cost-item-label">💰 サービス料</span>
+          <span class="cost-item-price green-price">¥30,000〜<small>/月</small></span>
+          <span class="cost-item-note">全コース・全社員が利用可能</span>
+        </div>
+        <div class="cost-total green-total">
+          <span>削減効果</span>
+          <span class="cost-total-price">最大 <strong>¥241,250</strong><small>/月</small> おトク</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
 
     <!-- ═══════════ PRICING ═══════════ -->
     <section class="section section-border" id="pricing">

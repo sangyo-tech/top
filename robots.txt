@@ -2,7 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://sangyo-tech.jp/sitemap.xml
-User-agent: *
-Allow: /
-
-Sitemap: https://sangyo-tech.github.io/top/sitemap.xml

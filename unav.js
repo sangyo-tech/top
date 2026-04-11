@@ -1,6 +1,6 @@
-/* unav.js v2 — 産業技術アカデミー 共通ナビ拡張 + GA4
+/* unav.js v3 — 産業技術アカデミー 共通ナビ拡張 + GA4 + フッター年自動更新
  * インラインnavがフォールバック。本JSは色定義とGA4計測を一元管理。
- * 更新時は index.html の ?v=X を上げてキャッシュ破棄。
+ * 更新時は index.html の ?v=3 を ?v=4 にバンプするとキャッシュが確実に切れる。
  */
 (function(){
   'use strict';
@@ -17,7 +17,7 @@
   ].join('');
   document.head.appendChild(styleEl);
 
-  // 2) GA4 gtag.js 注入（重複防止）
+  // 2) GA4 gtag.js 注入（クロスドメイン計測）
   var GA_ID = 'G-01642XG5SG';
   if (!window.gtag && !document.querySelector('script[src*="googletagmanager.com/gtag/js"]')){
     var gs = document.createElement('script');
@@ -31,5 +31,31 @@
       cookie_domain: 'auto',
       cookie_flags: 'SameSite=None;Secure'
     });
+  }
+
+  // 3) フッター著作権年の自動更新（更新漏れ防止）
+  function updateFooterYear(){
+    var currentYear = new Date().getFullYear();
+    var footers = document.querySelectorAll('footer');
+    if (!footers.length) return;
+    var pattern = /((?:©|\(c\)|Copyright)\s*)20\d{2}/gi;
+    footers.forEach(function(f){
+      var walker = document.createTreeWalker(f, NodeFilter.SHOW_TEXT, null, false);
+      var node;
+      var updates = [];
+      while ((node = walker.nextNode())){
+        pattern.lastIndex = 0;
+        if (pattern.test(node.nodeValue)) updates.push(node);
+      }
+      updates.forEach(function(n){
+        pattern.lastIndex = 0;
+        n.nodeValue = n.nodeValue.replace(pattern, '$1' + currentYear);
+      });
+    });
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', updateFooterYear);
+  } else {
+    updateFooterYear();
   }
 })();

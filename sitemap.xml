@@ -7,51 +7,39 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sangyo-tech.jp/privacy/</loc>
+    <loc>https://course.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sangyo-tech.jp/tokushoho/</loc>
+    <loc>https://pricing.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://service.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://course.sangyo-tech.jp/</loc>
-    <lastmod>2026-04-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://pricing.sangyo-tech.jp/</loc>
-    <lastmod>2026-04-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://apply.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://about-us.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://qc7.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
@@ -63,12 +51,6 @@
   <url>
     <loc>https://skill-check.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://contents.sangyo-tech.jp/</loc>
-    <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -76,18 +58,6 @@
     <loc>https://update.sangyo-tech.jp/</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://quiz.sangyo-tech.jp/</loc>
-    <lastmod>2026-04-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://final-exam.sangyo-tech.jp/</loc>
-    <lastmod>2026-04-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
 </urlset>

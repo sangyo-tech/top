@@ -2565,7 +2565,7 @@
 
 
 
-            <div class="hero-stat-num">178<span>本+</span></div>
+            <div class="hero-stat-num"><span class="count-up" data-count="178">178</span><span>本+</span></div>
 
 
 
@@ -2585,7 +2585,7 @@
 
 
 
-            <div class="hero-stat-num">5<span>本+/月</span></div>
+            <div class="hero-stat-num"><span class="count-up" data-count="5">5</span><span>本+/月</span></div>
 
 
 
@@ -2605,7 +2605,7 @@
 
 
 
-            <div class="hero-stat-num">5<span>分前後</span></div>
+            <div class="hero-stat-num"><span class="count-up" data-count="5">5</span><span>分前後</span></div>
 
 
 
@@ -2625,7 +2625,7 @@
 
 
 
-            <div class="hero-stat-num">6<span>業界</span></div>
+            <div class="hero-stat-num"><span class="count-up" data-count="6">6</span><span>業界</span></div>
 
 
 
@@ -2643,7 +2643,7 @@
 
           <div class="hero-stat stat-cyan">
 
-            <div class="hero-stat-num">178<span>問+</span></div>
+            <div class="hero-stat-num"><span class="count-up" data-count="178">178</span><span>問+</span></div>
 
             <div class="hero-stat-title">理解度テスト</div>
 
@@ -2652,7 +2652,7 @@
           </div>
 
           <div class="hero-stat stat-gold">
-            <div class="hero-stat-num">32<span>コース</span></div>
+            <div class="hero-stat-num"><span class="count-up" data-count="32">32</span><span>コース</span></div>
             <div class="hero-stat-title">体系的なカリキュラム</div>
             <div class="hero-stat-desc">入門から管理職・ISO・業界別まで網羅</div>
           </div>
@@ -3183,7 +3183,7 @@
 
 
 
-          <div class="vol-num">178<span>本以上</span></div>
+          <div class="vol-num"><span class="count-up" data-count="178">178</span><span>本以上</span></div>
 
 
 
@@ -3489,15 +3489,15 @@
 
     <div style="position: absolute; top: -20px; right: -20px; font-size: 120px; opacity: 0.1;">💰</div>
 
-    <p style="font-size: 0.95rem; margin-bottom: 8px; opacity: 0.9; letter-spacing: 0.05em;">社内教育コスト 月額 ¥271,250 が…</p>
+    <p style="font-size: 0.95rem; margin-bottom: 8px; opacity: 0.9; letter-spacing: 0.05em;">社内教育コスト 月額 ¥<span class="count-up" data-count="271250" data-prefix="¥" data-comma="true" data-raw="true">271,250</span> が…</p>
 
     <div style="display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
 
-      <span style="font-size: 1.1rem; text-decoration: line-through; opacity: 0.7;">¥271,250/月</span>
+      <span style="font-size: 1.1rem; text-decoration: line-through; opacity: 0.7;">¥<span class="count-up" data-count="271250" data-comma="true" data-raw="true">271,250</span>/月</span>
 
       <span style="font-size: 2rem;">→</span>
 
-      <span style="font-size: 2.4rem; font-weight: 800;">¥30,000<small style="font-size: 1rem;">/月</small></span>
+      <span style="font-size: 2.4rem; font-weight: 800;">¥<span class="count-up" data-count="30000" data-comma="true" data-raw="true">30,000</span><small style="font-size: 1rem;">/月</small></span>
 
     </div>
 
@@ -3507,7 +3507,7 @@
 
         <div style="font-size: 0.8rem; opacity: 0.9;">削減額</div>
 
-        <div style="font-size: 1.8rem; font-weight: 800;">¥291,250<small style="font-size: 0.9rem;">/月</small></div>
+        <div style="font-size: 1.8rem; font-weight: 800;">¥<span class="count-up" data-count="291250" data-comma="true" data-raw="true">291,250</span><small style="font-size: 0.9rem;">/月</small></div>
 
       </div>
 
@@ -3515,7 +3515,7 @@
 
         <div style="font-size: 0.8rem; opacity: 0.9;">削減率</div>
 
-        <div style="font-size: 1.8rem; font-weight: 800;">約89<small style="font-size: 0.9rem;">%</small>OFF</div>
+        <div style="font-size: 1.8rem; font-weight: 800;">約<span class="count-up" data-count="89" data-raw="true">89</span><small style="font-size: 0.9rem;">%</small>OFF</div>
 
       </div>
 
@@ -3523,7 +3523,7 @@
 
         <div style="font-size: 0.8rem; opacity: 0.9;">年間削減額</div>
 
-        <div style="font-size: 1.8rem; font-weight: 800;">約¥289万<small style="font-size: 0.9rem;">/年</small></div>
+        <div style="font-size: 1.8rem; font-weight: 800;">約¥<span class="count-up" data-count="289" data-raw="true">289</span>万<small style="font-size: 0.9rem;">/年</small></div>
 
       </div>
 
@@ -4527,6 +4527,65 @@
 
 
   <script src="https://sangyo-tech.jp/unav.js?v=3" defer></script>
+
+  <!-- Scroll-triggered animated number counters -->
+  <script>
+  (function() {
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function formatWithCommas(n) {
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function animateCount(el) {
+      var target = parseInt(el.getAttribute('data-count'), 10);
+      var useComma = el.hasAttribute('data-comma');
+      var duration = 1500;
+      var startTime = null;
+
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var progress = Math.min((timestamp - startTime) / duration, 1);
+        var easedProgress = easeOutCubic(progress);
+        var current = Math.round(easedProgress * target);
+
+        if (useComma) {
+          el.textContent = formatWithCommas(current);
+        } else {
+          el.textContent = current;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          if (useComma) {
+            el.textContent = formatWithCommas(target);
+          } else {
+            el.textContent = target;
+          }
+        }
+      }
+
+      el.textContent = '0';
+      requestAnimationFrame(step);
+    }
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animateCount(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.count-up').forEach(function(el) {
+      observer.observe(el);
+    });
+  })();
+  </script>
 </body>
 
 
